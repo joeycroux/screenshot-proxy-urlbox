@@ -1,33 +1,37 @@
 const fetch = require('node-fetch');
-const getColors = require('get-image-colors');
+const fs = require('fs');
+const path = require('path');
+const { getPaletteFromURL } = require('colorthief');
 
 module.exports = async (req, res) => {
-  const { url } = req.query;
+  const { imageUrl } = req.query;
 
-  if (!url) {
-    return res.status(400).json({ error: 'Missing url parameter' });
+  if (!imageUrl) {
+    return res.status(400).json({ error: 'Missing imageUrl parameter' });
   }
 
   try {
-    const screenshotUrl = `https://api.urlbox.io/v1/${process.env.URLBOX_API_KEY}/png?url=${encodeURIComponent(url)}&full_page=true&width=1200&height=900`;
-
-    const response = await fetch(screenshotUrl);
+    // Download image temporarily to disk
+    const response = await fetch(imageUrl);
     if (!response.ok) {
-      return res.status(response.status).json({ error: 'Failed to fetch screenshot' });
+      return res.status(400).json({ error: 'Failed to download image from URL' });
     }
 
     const buffer = await response.buffer();
+    const tempPath = path.join('/tmp', 'temp-image.png');
+    fs.writeFileSync(tempPath, buffer);
 
-    const colors = await getColors(buffer, 'image/png');
+    const palette = await getPaletteFromURL(tempPath);
 
-    const palette = colors.map(color => ({
-      hex: color.hex(),
-      rgb: color.rgb()
-    }));
+    // Clean up
+    fs.unlinkSync(tempPath);
 
-    res.status(200).json({ url, palette });
+    res.status(200).json({
+      imageUrl,
+      palette: palette.map(([r, g, b]) => `rgb(${r}, ${g}, ${b})`)
+    });
   } catch (error) {
-    console.error('Error generating color palette:', error);
+    console.error('Palette generation error:', error);
     res.status(500).json({ error: 'Failed to generate color palette' });
   }
 };
