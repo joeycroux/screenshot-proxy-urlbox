@@ -21,32 +21,28 @@ module.exports = async (req, res) => {
     }
 
     const html = await response.text();
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
+    console.log('Fetched HTML length:', html.length);
 
-    const getMeta = (name) =>
-      doc.querySelector(`meta[name="${name}"]`)?.content ||
-      doc.querySelector(`meta[property="${name}"]`)?.content ||
-      null;
+    const dom = new JSDOM(html);
+    const document = dom.window.document;
 
     const metadata = {
-      title: doc.querySelector('title')?.textContent || null,
-      description: getMeta('description'),
-      robots: getMeta('robots'),
-      canonical: doc.querySelector('link[rel="canonical"]')?.href || null,
-      ogTitle: getMeta('og:title'),
-      ogDescription: getMeta('og:description'),
-      ogImage: getMeta('og:image'),
-      twitterCard: getMeta('twitter:card'),
-      twitterTitle: getMeta('twitter:title'),
-      twitterDescription: getMeta('twitter:description'),
-      favicon: doc.querySelector('link[rel="icon"]')?.href || null,
-      charset: doc.characterSet || null
+      url,
+      title: document.querySelector('title')?.textContent || null,
+      description: document.querySelector('meta[name="description"]')?.content || null,
+      canonical: document.querySelector('link[rel="canonical"]')?.href || null,
+      ogTitle: document.querySelector('meta[property="og:title"]')?.content || null,
+      ogDescription: document.querySelector('meta[property="og:description"]')?.content || null,
+      ogImage: document.querySelector('meta[property="og:image"]')?.content || null,
+      ogUrl: document.querySelector('meta[property="og:url"]')?.content || null,
+      twitterTitle: document.querySelector('meta[name="twitter:title"]')?.content || null,
+      twitterDescription: document.querySelector('meta[name="twitter:description"]')?.content || null,
+      twitterImage: document.querySelector('meta[name="twitter:image"]')?.content || null
     };
 
     res.status(200).json(metadata);
   } catch (error) {
-    console.error('Error extracting metadata:', error);
+    console.error('Metadata extraction error:', error);
     res.status(500).json({ error: 'Failed to extract metadata' });
   }
 };
