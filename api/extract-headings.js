@@ -1,5 +1,5 @@
-const fetch = require('node-fetch');
-const { JSDOM } = require('jsdom');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
   const { url } = req.query;
@@ -9,35 +9,22 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; GPT-Audit-Bot/1.0)'
-      }
+    const response = await axios.get(url, {
+      headers: { 'User-Agent': 'SEO-Agent-Bot' }
+    });
+    const $ = cheerio.load(response.data);
+
+    const headings = {};
+    ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(tag => {
+      headings[tag] = [];
+      $(tag).each((_, el) => {
+        headings[tag].push($(el).text().trim());
+      });
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(response.status).json({ error: 'Failed to fetch page', details: text });
-    }
-
-    const html = await response.text();
-    const dom = new JSDOM(html);
-    const document = dom.window.document;
-
-    const headings = [];
-    for (let level = 1; level <= 6; level++) {
-      const tag = `h${level}`;
-      document.querySelectorAll(tag).forEach(el => {
-        headings.push({
-          tag,
-          text: el.textContent.trim(),
-        });
-      });
-    }
-
-    res.status(200).json({ url, headings });
+    res.status(200).json({ headings });
   } catch (error) {
-    console.error('Error extracting headings:', error);
+    console.error('Error extracting headings:', error.message);
     res.status(500).json({ error: 'Failed to extract headings' });
   }
 };
