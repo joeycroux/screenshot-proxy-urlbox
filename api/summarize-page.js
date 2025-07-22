@@ -8,12 +8,21 @@ module.exports = async (req, res) => {
   try {
     const { data: html } = await axios.get(url);
     const $ = cheerio.load(html);
-    const text = $('body').text().replace(/\s+/g, ' ').trim();
-    const summary = text.split('.').slice(0, 3).join('. ') + '.';
+
+    // Prefer content inside <main>, <article>, or largest <div>
+    let content =
+      $('main').text() ||
+      $('article').text() ||
+      $('body').text();
+
+    const cleanedText = content.replace(/\s+/g, ' ').trim();
+    const sentences = cleanedText.split(/(?<=[.?!])\s+/).filter(Boolean);
+
+    const summary = sentences.slice(0, 5).join(' ');
 
     res.json({
       url,
-      summary
+      summary: summary || 'No meaningful content found to summarize.'
     });
   } catch (error) {
     console.error('Error summarizing page:', error.message);
