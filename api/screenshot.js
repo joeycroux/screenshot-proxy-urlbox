@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 module.exports = async (req, res) => {
   const { url, ...options } = req.query;
-  const API_KEY = process.env.URLBOX_SECRET;
+  const API_KEY = process.env.URLBOX_SECRET; // <- Updated
   const SLUG = process.env.URLBOX_SLUG;
 
   if (!url) {
@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
   const queryParams = new URLSearchParams({
     api_key: API_KEY,
     url,
-    ...options // optional: full_page, retina, html_save, etc.
+    ...options // full_page, html_save, retina, etc.
   });
 
   const endpoint = `https://api.urlbox.io/v1/${SLUG}/png?${queryParams.toString()}`;
