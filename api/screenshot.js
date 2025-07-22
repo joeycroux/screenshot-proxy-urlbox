@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 module.exports = async (req, res) => {
-  const { url } = req.query;
+  const { url, ...options } = req.query;
   const API_KEY = process.env.URLBOX_API_KEY;
   const SLUG = process.env.URLBOX_SLUG;
 
@@ -9,7 +9,13 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Missing url parameter' });
   }
 
-  const endpoint = `https://api.urlbox.io/v1/${SLUG}/png?api_key=${API_KEY}&url=${encodeURIComponent(url)}`;
+  const queryParams = new URLSearchParams({
+    api_key: API_KEY,
+    url,
+    ...options // full_page, html_save, retina, etc.
+  });
+
+  const endpoint = `https://api.urlbox.io/v1/${SLUG}/png?${queryParams.toString()}`;
 
   try {
     const response = await fetch(endpoint);
@@ -19,7 +25,6 @@ module.exports = async (req, res) => {
       return res.status(response.status).json({ error: 'URLbox error', details: text });
     }
 
-    // Pass through the image content
     const buffer = await response.arrayBuffer();
     res.setHeader('Content-Type', 'image/png');
     res.send(Buffer.from(buffer));
