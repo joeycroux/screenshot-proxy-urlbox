@@ -6,25 +6,27 @@ module.exports = async (req, res) => {
   if (!url) return res.status(400).json({ error: 'Missing url parameter' });
 
   try {
-    const { data: xml } = await axios.get(url);
-    xml2js.parseString(xml, { trim: true }, (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: 'Failed to parse sitemap XML' });
-      }
+    const base = new URL(url).origin;
+    const sitemapUrl = `${base}/sitemap.xml`;
+    const { data: xml } = await axios.get(sitemapUrl);
 
-      const urls = [];
-      const entries = result.urlset?.url || [];
+    const parsed = await xml2js.parseStringPromise(xml, { trim: true });
 
-      for (const entry of entries) {
-        if (entry.loc && entry.loc[0]) {
-          urls.push(entry.loc[0]);
-        }
-      }
+    const urls = parsed.urlset?.url?.map(u => ({
+      loc: u.loc?.[0] || null,
+      lastmod: u.lastmod?.[0] || null,
+      priority: u.priority?.[0] || null,
+      changefreq: u.changefreq?.[0] || null
+    })) || [];
 
-      res.json({ url, count: urls.length, urls });
+    res.json({
+      url,
+      sitemapUrl,
+      count: urls.length,
+      pages: urls
     });
   } catch (error) {
     console.error('Error extracting sitemap:', error.message);
-    res.status(500).json({ error: 'Failed to retrieve or parse sitemap' });
+    res.status(500).json({ error: 'Failed to extract sitemap' });
   }
 };
