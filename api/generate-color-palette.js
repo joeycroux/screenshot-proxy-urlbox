@@ -1,6 +1,5 @@
 const fetch = require('node-fetch');
-const ColorThief = require('colorthief');
-const sharp = require('sharp');
+const getColors = require('get-image-colors');
 
 module.exports = async (req, res) => {
   const { url } = req.query;
@@ -18,18 +17,17 @@ module.exports = async (req, res) => {
     }
 
     const buffer = await response.buffer();
-    const image = await sharp(buffer).resize(300).toBuffer();
 
-    const dominant = await ColorThief.getColor(image);
-    const palette = await ColorThief.getPalette(image, 5);
+    const colors = await getColors(buffer, 'image/png');
 
-    res.status(200).json({
-      url,
-      dominant,
-      palette
-    });
+    const palette = colors.map(color => ({
+      hex: color.hex(),
+      rgb: color.rgb()
+    }));
+
+    res.status(200).json({ url, palette });
   } catch (error) {
-    console.error('Color palette generation failed:', error);
+    console.error('Error generating color palette:', error);
     res.status(500).json({ error: 'Failed to generate color palette' });
   }
 };
