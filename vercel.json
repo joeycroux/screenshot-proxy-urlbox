@@ -4,12 +4,20 @@
     {
       "src": "api/screenshot.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/extract-html.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/screenshot",
       "dest": "api/screenshot.js"
+    },
+    {
+      "src": "/extract-html",
+      "dest": "api/extract-html.js"
     }
   ]
 }
