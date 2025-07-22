@@ -11,12 +11,16 @@ app.get('/screenshot', async (req, res) => {
   if (!url) return res.status(400).json({ error: 'Missing url parameter' });
 
   const endpoint = `https://api.urlbox.io/v1/${SLUG}/url?api_key=${URLBOX_KEY}&url=${encodeURIComponent(url)}`;
+  console.log(`Calling URLbox: ${endpoint}`);
+
   try {
     const resp = await fetch(endpoint);
     const data = await resp.json();
-    return res.json({ imageUrl: data.url });
+    console.log('URLbox Response:', data);
+    return res.json(data);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('Error calling URLbox:', err);
+    return res.status(500).json({ error: 'Failed to fetch screenshot' });
   }
 });
 
