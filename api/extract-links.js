@@ -1,6 +1,5 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 const { JSDOM } = require('jsdom');
-const { URL } = require('url');
 
 module.exports = async (req, res) => {
   const { url } = req.query;
@@ -10,38 +9,19 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const baseUrl = new URL(url);
-
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; GPT-Audit-Bot/1.0)'
-      }
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(response.status).json({ error: 'Failed to fetch page', details: text });
-    }
-
-    const html = await response.text();
-    const dom = new JSDOM(html);
+    const response = await axios.get(url);
+    const dom = new JSDOM(response.data);
     const document = dom.window.document;
+    const links = Array.from(document.querySelectorAll('a'))
+      .map(link => ({
+        text: link.textContent.trim(),
+        href: link.href
+      }))
+      .filter(link => link.href && link.href.startsWith('http'));
 
-    const anchors = Array.from(document.querySelectorAll('a'));
-
-    const links = anchors.map(a => {
-      const href = a.getAttribute('href') || '';
-      const isInternal = href.startsWith('/') || href.includes(baseUrl.hostname);
-      return {
-        text: a.textContent.trim(),
-        href,
-        type: isInternal ? 'internal' : 'external'
-      };
-    });
-
-    res.status(200).json({ url, links });
+    res.json({ links });
   } catch (error) {
-    console.error('Error extracting links:', error);
+    console.error('Error extracting links:', error.message);
     res.status(500).json({ error: 'Failed to extract links' });
   }
 };
