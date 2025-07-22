@@ -1,22 +1,12 @@
 {
   "version": 2,
   "builds": [
-    { "src": "index.js", "use": "@vercel/node" },
-    { "src": "analyze-structure.js", "use": "@vercel/node" },
-    { "src": "check-robots.js", "use": "@vercel/node" },
-    { "src": "extract-headings.js", "use": "@vercel/node" },
-    { "src": "extract-html.js", "use": "@vercel/node" },
-    { "src": "extract-links.js", "use": "@vercel/node" },
-    { "src": "extract-metadata.js", "use": "@vercel/node" },
-    { "src": "extract-schema.js", "use": "@vercel/node" },
-    { "src": "extract-sitemap.js", "use": "@vercel/node" },
-    { "src": "generate-color-palette.js", "use": "@vercel/node" },
-    { "src": "screenshot-and-palette.js", "use": "@vercel/node" },
-    { "src": "screenshot.js", "use": "@vercel/node" },
-    { "src": "summarize-page.js", "use": "@vercel/node" }
+    {
+      "src": "*.js",
+      "use": "@vercel/node"
+    }
   ],
   "routes": [
-    { "src": "/screenshot", "dest": "/index.js" },
     { "src": "/analyze-structure", "dest": "/analyze-structure.js" },
     { "src": "/check-robots", "dest": "/check-robots.js" },
     { "src": "/extract-headings", "dest": "/extract-headings.js" },
@@ -25,9 +15,7 @@
     { "src": "/extract-metadata", "dest": "/extract-metadata.js" },
     { "src": "/extract-schema", "dest": "/extract-schema.js" },
     { "src": "/extract-sitemap", "dest": "/extract-sitemap.js" },
-    { "src": "/generate-color-palette", "dest": "/generate-color-palette.js" },
-    { "src": "/screenshot-and-palette", "dest": "/screenshot-and-palette.js" },
-    { "src": "/screenshot-direct", "dest": "/screenshot.js" },
+    { "src": "/screenshot", "dest": "/screenshot.js" },
     { "src": "/summarize-page", "dest": "/summarize-page.js" }
   ]
 }
