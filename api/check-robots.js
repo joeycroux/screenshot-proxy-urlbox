@@ -9,7 +9,16 @@ module.exports = async (req, res) => {
     const base = new URL(url).origin;
     const robotsUrl = `${base}/robots.txt`;
 
-    const { data } = await axios.get(robotsUrl);
+    const { data, status } = await axios.get(robotsUrl, { validateStatus: false });
+
+    if (status !== 200 || !data || typeof data !== 'string') {
+      return res.status(404).json({
+        url,
+        robotsUrl,
+        error: 'robots.txt not found or invalid format'
+      });
+    }
+
     const robots = robotsParser(robotsUrl, data);
 
     res.json({
