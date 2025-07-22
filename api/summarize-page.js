@@ -1,43 +1,22 @@
-const fetch = require('node-fetch');
-const { JSDOM } = require('jsdom');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
   const { url } = req.query;
-
-  if (!url) {
-    return res.status(400).json({ error: 'Missing url parameter' });
-  }
+  if (!url) return res.status(400).json({ error: 'Missing url parameter' });
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; GPT-Audit-Bot/1.0)'
-      }
-    });
+    const { data: html } = await axios.get(url);
+    const $ = cheerio.load(html);
+    const text = $('body').text().replace(/\s+/g, ' ').trim();
+    const summary = text.split('.').slice(0, 3).join('. ') + '.';
 
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(response.status).json({ error: 'Failed to fetch page', details: text });
-    }
-
-    const html = await response.text();
-    const dom = new JSDOM(html);
-    const document = dom.window.document;
-
-    // Remove script and style tags
-    document.querySelectorAll('script, style, noscript').forEach(el => el.remove());
-
-    const rawText = document.body.textContent || '';
-    const cleanText = rawText.replace(/\s+/g, ' ').trim();
-    const trimmed = cleanText.length > 1200 ? cleanText.substring(0, 1200) + '...' : cleanText;
-
-    res.status(200).json({
+    res.json({
       url,
-      wordCount: cleanText.split(/\s+/).length,
-      summary: trimmed
+      summary
     });
   } catch (error) {
-    console.error('Error summarizing page:', error);
+    console.error('Error summarizing page:', error.message);
     res.status(500).json({ error: 'Failed to summarize page' });
   }
 };
