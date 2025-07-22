@@ -1,7 +1,7 @@
 {
   "name": "seo-agent-automation",
   "version": "1.0.0",
-  "description": "A Vercel-based microservice stack for SEO audits via GPT agent",
+  "description": "A Vercel-based microservice stack for SEO automation via GPT agent",
   "main": "index.js",
   "scripts": {
     "start": "vercel dev"
@@ -14,6 +14,8 @@
     "cheerio": "^1.0.0-rc.12",
     "jsdom": "^24.0.0",
     "mime-types": "^2.1.35",
-    "xml2js": "^0.6.2"
-  }
+    "xml2js": "^0.6.2",
+    "node-fetch": "^3.3.2"
+  },
+  "type": "module"
 }
