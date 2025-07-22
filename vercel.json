@@ -2,20 +2,20 @@
   "version": 2,
   "builds": [
     {
-      "src": "*.js",
+      "src": "api/*.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
-    { "src": "/screenshot", "dest": "/screenshot.js" },
-    { "src": "/extract-html", "dest": "/extract-html.js" },
-    { "src": "/extract-headings", "dest": "/extract-headings.js" },
-    { "src": "/extract-links", "dest": "/extract-links.js" },
-    { "src": "/extract-metadata", "dest": "/extract-metadata.js" },
-    { "src": "/extract-schema", "dest": "/extract-schema.js" },
-    { "src": "/summarize-page", "dest": "/summarize-page.js" },
-    { "src": "/check-robots", "dest": "/check-robots.js" },
-    { "src": "/analyze-structure", "dest": "/analyze-structure.js" },
-    { "src": "/extract-sitemap", "dest": "/extract-sitemap.js" }
+    { "src": "/screenshot", "dest": "/api/screenshot.js" },
+    { "src": "/extract-html", "dest": "/api/extract-html.js" },
+    { "src": "/extract-headings", "dest": "/api/extract-headings.js" },
+    { "src": "/extract-links", "dest": "/api/extract-links.js" },
+    { "src": "/extract-metadata", "dest": "/api/extract-metadata.js" },
+    { "src": "/extract-schema", "dest": "/api/extract-schema.js" },
+    { "src": "/summarize-page", "dest": "/api/summarize-page.js" },
+    { "src": "/check-robots", "dest": "/api/check-robots.js" },
+    { "src": "/analyze-structure", "dest": "/api/analyze-structure.js" },
+    { "src": "/extract-sitemap", "dest": "/api/extract-sitemap.js" }
   ]
 }
