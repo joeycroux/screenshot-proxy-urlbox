@@ -9,7 +9,8 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Missing url parameter' });
   }
 
-  const endpoint = `https://api.urlbox.io/v1/${SLUG}/url?api_key=${API_KEY}&url=${encodeURIComponent(url)}`;
+ const endpoint = `https://api.urlbox.io/v1/${SLUG}/png?api_key=${API_KEY}&url=${encodeURIComponent(url)}`;
+
   console.log(`Calling URLbox: ${endpoint}`);
 
   try {
