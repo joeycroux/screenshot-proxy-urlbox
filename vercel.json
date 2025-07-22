@@ -7,15 +7,15 @@
     }
   ],
   "routes": [
-    { "src": "/analyze-structure", "dest": "/analyze-structure.js" },
-    { "src": "/check-robots", "dest": "/check-robots.js" },
-    { "src": "/extract-headings", "dest": "/extract-headings.js" },
+    { "src": "/screenshot", "dest": "/screenshot.js" },
     { "src": "/extract-html", "dest": "/extract-html.js" },
+    { "src": "/extract-headings", "dest": "/extract-headings.js" },
     { "src": "/extract-links", "dest": "/extract-links.js" },
     { "src": "/extract-metadata", "dest": "/extract-metadata.js" },
     { "src": "/extract-schema", "dest": "/extract-schema.js" },
-    { "src": "/extract-sitemap", "dest": "/extract-sitemap.js" },
-    { "src": "/screenshot", "dest": "/screenshot.js" },
-    { "src": "/summarize-page", "dest": "/summarize-page.js" }
+    { "src": "/summarize-page", "dest": "/summarize-page.js" },
+    { "src": "/check-robots", "dest": "/check-robots.js" },
+    { "src": "/analyze-structure", "dest": "/analyze-structure.js" },
+    { "src": "/extract-sitemap", "dest": "/extract-sitemap.js" }
   ]
 }
