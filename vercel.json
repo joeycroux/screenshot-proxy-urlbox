@@ -2,22 +2,19 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/screenshot.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/extract-html.js",
+      "src": "api/*.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
-    {
-      "src": "/screenshot",
-      "dest": "api/screenshot.js"
-    },
-    {
-      "src": "/extract-html",
-      "dest": "api/extract-html.js"
-    }
+    { "src": "/screenshot", "dest": "/api/screenshot.js" },
+    { "src": "/extract-html", "dest": "/api/extract-html.js" },
+    { "src": "/extract-metadata", "dest": "/api/extract-metadata.js" },
+    { "src": "/extract-headings", "dest": "/api/extract-headings.js" },
+    { "src": "/generate-color-palette", "dest": "/api/generate-color-palette.js" },
+    { "src": "/analyze-structure", "dest": "/api/analyze-structure.js" },
+    { "src": "/summarize-page", "dest": "/api/summarize-page.js" },
+    { "src": "/check-robots", "dest": "/api/check-robots.js" },
+    { "src": "/extract-schema", "dest": "/api/extract-schema.js" }
   ]
 }
