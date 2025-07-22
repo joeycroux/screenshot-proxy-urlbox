@@ -1,45 +1,30 @@
-const fetch = require('node-fetch');
-const { JSDOM } = require('jsdom');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
   const { url } = req.query;
-
-  if (!url) {
-    return res.status(400).json({ error: 'Missing url parameter' });
-  }
+  if (!url) return res.status(400).json({ error: 'Missing url parameter' });
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; GPT-Audit-Bot/1.0)'
-      }
-    });
+    const { data: html } = await axios.get(url);
+    const $ = cheerio.load(html);
 
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(response.status).json({ error: 'Failed to fetch page', details: text });
-    }
+    const structure = {
+      title: $('title').text(),
+      h1: $('h1').length,
+      h2: $('h2').length,
+      h3: $('h3').length,
+      images: $('img').length,
+      links: $('a').length,
+      paragraphs: $('p').length,
+      forms: $('form').length,
+      scripts: $('script').length,
+      stylesheets: $('link[rel="stylesheet"]').length
+    };
 
-    const html = await response.text();
-    const dom = new JSDOM(html);
-    const document = dom.window.document;
-
-    const tags = ['header', 'nav', 'main', 'aside', 'footer', 'section', 'article'];
-    const structure = [];
-
-    tags.forEach(tag => {
-      const elements = document.querySelectorAll(tag);
-      if (elements.length > 0) {
-        structure.push({
-          tag,
-          count: elements.length
-        });
-      }
-    });
-
-    res.status(200).json({ url, structure });
+    res.json({ url, structure });
   } catch (error) {
-    console.error('Error analyzing structure:', error);
+    console.error('Error analyzing structure:', error.message);
     res.status(500).json({ error: 'Failed to analyze structure' });
   }
 };
