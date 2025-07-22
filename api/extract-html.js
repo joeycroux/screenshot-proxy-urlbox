@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 module.exports = async (req, res) => {
   const { url } = req.query;
@@ -8,21 +8,13 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; GPT-Audit-Bot/1.0)',
-      }
+    const response = await axios.get(url, {
+      headers: { 'User-Agent': 'SEO-Agent-Bot' }
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(response.status).json({ error: 'Failed to fetch HTML', details: text });
-    }
-
-    const html = await response.text();
-    res.status(200).json({ html });
+    return res.status(200).json({ html: response.data });
   } catch (error) {
-    console.error('Error extracting HTML:', error);
-    res.status(500).json({ error: 'Failed to extract HTML' });
+    console.error('Error fetching HTML:', error.message);
+    return res.status(500).json({ error: 'Failed to retrieve HTML content' });
   }
 };
