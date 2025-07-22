@@ -1,48 +1,32 @@
-const fetch = require('node-fetch');
-const { JSDOM } = require('jsdom');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
   const { url } = req.query;
-
-  if (!url) {
-    return res.status(400).json({ error: 'Missing url parameter' });
-  }
+  if (!url) return res.status(400).json({ error: 'Missing url parameter' });
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; GPT-Audit-Bot/1.0)'
-      }
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(response.status).json({ error: 'Failed to fetch page', details: text });
-    }
-
-    const html = await response.text();
-    console.log('Fetched HTML length:', html.length);
-
-    const dom = new JSDOM(html);
-    const document = dom.window.document;
+    const response = await axios.get(url, { maxRedirects: 5 });
+    const $ = cheerio.load(response.data);
 
     const metadata = {
-      url,
-      title: document.querySelector('title')?.textContent || null,
-      description: document.querySelector('meta[name="description"]')?.content || null,
-      canonical: document.querySelector('link[rel="canonical"]')?.href || null,
-      ogTitle: document.querySelector('meta[property="og:title"]')?.content || null,
-      ogDescription: document.querySelector('meta[property="og:description"]')?.content || null,
-      ogImage: document.querySelector('meta[property="og:image"]')?.content || null,
-      ogUrl: document.querySelector('meta[property="og:url"]')?.content || null,
-      twitterTitle: document.querySelector('meta[name="twitter:title"]')?.content || null,
-      twitterDescription: document.querySelector('meta[name="twitter:description"]')?.content || null,
-      twitterImage: document.querySelector('meta[name="twitter:image"]')?.content || null
+      resolvedUrl: response.request.res.responseUrl || url,
+      title: $('title').text() || null,
+      description: $('meta[name="description"]').attr('content') || null,
+      keywords: $('meta[name="keywords"]').attr('content') || null,
+      author: $('meta[name="author"]').attr('content') || null,
+      ogTitle: $('meta[property="og:title"]').attr('content') || null,
+      ogDescription: $('meta[property="og:description"]').attr('content') || null,
+      ogImage: $('meta[property="og:image"]').attr('content') || null,
+      twitterCard: $('meta[name="twitter:card"]').attr('content') || null,
+      twitterTitle: $('meta[name="twitter:title"]').attr('content') || null,
+      twitterDescription: $('meta[name="twitter:description"]').attr('content') || null,
+      canonical: $('link[rel="canonical"]').attr('href') || null
     };
 
     res.status(200).json(metadata);
   } catch (error) {
-    console.error('Metadata extraction error:', error);
+    console.error('Error extracting metadata:', error);
     res.status(500).json({ error: 'Failed to extract metadata' });
   }
 };
