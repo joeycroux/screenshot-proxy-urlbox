@@ -1,14 +1,15 @@
 {
   "version": 2,
-  "functions": {
-    "api/screenshot.js": {
-      "runtime": "nodejs18.x"
+  "builds": [
+    {
+      "src": "api/screenshot.js",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/screenshot",
-      "dest": "/api/screenshot.js"
+      "dest": "api/screenshot.js"
     }
   ]
 }
