@@ -1,7 +1,7 @@
 {
   "name": "seo-agent-automation",
   "version": "1.0.0",
-  "description": "A Vercel-based microservice stack for SEO automation via GPT agent",
+  "description": "A Vercel-based microservice stack for SEO audits via GPT agent",
   "main": "index.js",
   "scripts": {
     "start": "vercel dev"
@@ -15,10 +15,5 @@
     "jsdom": "^24.0.0",
     "mime-types": "^2.1.35",
     "xml2js": "^0.6.2"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/joeycroux/screenshot-proxy-urlbox"
   }
 }
